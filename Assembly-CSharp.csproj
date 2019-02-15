@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Box.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
-    <Compile Include="Assets\Scripts\TestOnly\TEST_MoveObject.cs" />
+    <Compile Include="Assets\ZZZTestOlny\Scripts\TEST_MoveObject.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>D:/Benutzerdaten/Uni/Dokumente/Github Zeug/Networking/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
