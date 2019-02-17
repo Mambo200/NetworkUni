@@ -25,6 +25,14 @@ public class Box : NetworkBehaviour
     private float m_totalLerpTime;
     private List<Vector3> m_nextPositions
         = new List<Vector3>();
+
+    Rigidbody m_rigidbody;
+
+    public override void OnStartServer()
+    {
+        m_rigidbody = GetComponent<Rigidbody>();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -55,7 +63,7 @@ public class Box : NetworkBehaviour
         Vector3 dir = new Vector3(Input.GetAxisRaw("Horizontal"), 0,
             Input.GetAxisRaw("Vertical"));
         dir = dir.normalized * Time.deltaTime * m_MovementSpeed;
-        transform.position += dir;
+        transform.Translate(dir);
 
 
         if (Time.frameCount % 10 == 0)
@@ -102,5 +110,10 @@ public class Box : NetworkBehaviour
     private void OnHpChanged(float _newHP)
     {
         gameObject.name = m_HP + "|" + _newHP;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Hit in Player");
     }
 }

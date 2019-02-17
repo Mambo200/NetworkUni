@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-    // Use this for initialization
-    void Start () {
-        
-	}
+    public float m_speed;
 	
 	// Update is called once per frame
 	void Update ()
@@ -22,7 +19,10 @@ public class Enemy : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Hit in Enemy");
+        if (collision.transform.tag == "Player")
+        {
+            Debug.Log("Hit in Enemy");
+        }
     }
 
     private void MoveToPlayer(GameObject _player)
@@ -30,7 +30,7 @@ public class Enemy : MonoBehaviour {
         Vector3 posEmeny = transform.position;
         Vector3 posPlayer = _player.transform.position;
 
-        float division = GetDistance(transform.position, _player.transform.position) * 30;
+        float division = GetDistance(transform.position, _player.transform.position) * m_speed;
 
         Vector3 toMove = ((posPlayer - posEmeny) / division);
         transform.Translate(toMove);
