@@ -1,28 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class Enemy : MonoBehaviour {
+public class Enemy : NetworkBehaviour {
 
     public float m_speed;
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
+        if (!isServer)
+            return;
         // get first player to find
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             MoveToPlayer(player);
         }
-	}
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.tag == "Player")
-        {
-            Debug.Log("Hit in Enemy");
-        }
     }
 
     private void MoveToPlayer(GameObject _player)
