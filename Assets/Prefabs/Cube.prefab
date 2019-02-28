@@ -49,7 +49,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1545734148986168
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,6 +273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MovementSpeed: 5
   m_DeadCounter: 0
+  m_playerCamera: {fileID: 20483026494583892}
 --- !u!114 &114236402107053804
 MonoBehaviour:
   m_ObjectHideFlags: 1
