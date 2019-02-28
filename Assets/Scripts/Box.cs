@@ -25,7 +25,15 @@ public class Box : NetworkBehaviour
     private List<Vector3> m_nextPositions
         = new List<Vector3>();
 
+    [SerializeField]
+    private Camera m_playerCamera;
+
     private Rigidbody m_rigidbody;
+
+    public override void OnStartLocalPlayer()
+    {
+        m_playerCamera.gameObject.SetActive(true);
+    }
 
     public override void OnStartServer()
     {

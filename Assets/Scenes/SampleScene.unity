@@ -427,16 +427,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 114236402107053804, guid: 620052b7cd380bd4f8e6d2e1be6768ee,
-        type: 2}
-      propertyPath: m_TransformSyncMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 54799694183847238, guid: 620052b7cd380bd4f8e6d2e1be6768ee,
-        type: 2}
-      propertyPath: m_IsKinematic
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 620052b7cd380bd4f8e6d2e1be6768ee, type: 2}
   m_IsPrefabAsset: 0
