@@ -8,6 +8,7 @@ public class Enemy : NetworkBehaviour {
 
     public float m_speed;
     private NavMeshAgent m_mesh;
+    private float m_distanceToSpawn;
 
     public override void OnStartServer()
     {
@@ -16,6 +17,16 @@ public class Enemy : NetworkBehaviour {
 
         m_mesh = GetComponent<NavMeshAgent>();
         m_mesh.Warp(new Vector3(1, 0, 1));
+    }
+
+
+    private void Start()
+    {
+        if (!isServer)
+            return;
+
+        m_distanceToSpawn = Spawnpoint.GetOne().transform.position.y - 10;
+
     }
     // Update is called once per frame
     void Update()
@@ -37,10 +48,14 @@ public class Enemy : NetworkBehaviour {
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    /// <summary>
+    /// Remove Gameobjects from array when player is at spawnpoint
+    /// </summary>
+    /// <param name="_player"></param>
+    private void RemovePlayerAtSpawn(GameObject _player)
     {
-    }
 
+    }
     /// <summary>
     /// Get Distance of gameobject array
     /// </summary>
