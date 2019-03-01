@@ -65,6 +65,9 @@ public class Box : NetworkBehaviour
         if (!isServer)
             return;
 
+        if (collision.transform.tag != "Enemy")
+            return;
+
         ResetPosition();
     }
 
