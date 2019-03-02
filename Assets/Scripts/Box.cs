@@ -62,6 +62,9 @@ public class Box : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.transform.tag == "Player")
+            m_rigidbody.isKinematic = true;
+
         if (!isServer)
             return;
 
@@ -69,6 +72,11 @@ public class Box : NetworkBehaviour
             return;
 
         ResetPosition();
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        m_rigidbody.isKinematic = false;
     }
 
     [Server]
@@ -82,6 +90,5 @@ public class Box : NetworkBehaviour
     private void RpcResetPosition(Vector3 _newPosition)
     {
         gameObject.transform.position = _newPosition;
-        Debug.Log(_newPosition);
     }
 }
