@@ -21,7 +21,18 @@ public class Spawnpoint : NetworkBehaviour {
 
     private void Initialize()
     {
-        get = GetComponentsInChildren<Transform>();
+        Transform[] all = GetComponentsInChildren<Transform>();
+        List<Transform> getList = new List<Transform>();
+
+        // remove Platforms and parent
+        foreach (Transform t in all)
+        {
+            if (t.name == "Spawnpoint")
+            {
+                getList.Add(t);
+            }
+        }
+        get = getList.ToArray();
         Debug.Log(get.Length);
     }
 
@@ -33,7 +44,6 @@ public class Spawnpoint : NetworkBehaviour {
     public static Transform GetOne()
     {
         int randomSpawnpoint = Random.Range(0, (get.Length - 1));
-        Debug.Log("Spawnpoint nr " + randomSpawnpoint);
         return get[randomSpawnpoint];
     }
 }

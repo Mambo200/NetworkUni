@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Networking;
@@ -9,6 +10,13 @@ public class Enemy : NetworkBehaviour {
     public float m_speed;
     private NavMeshAgent m_mesh;
     private float m_distanceToSpawn;
+    private static float MaxDistance { get { return 500f; } }
+
+    public static string HuntBeh { get { return "HUNT"; } }
+    public static string WALKBeh { get { return "WALK"; } }
+
+    private static string m_lastBehaviour;
+    private static string m_nextBehaviour;
 
     public override void OnStartServer()
     {
@@ -33,28 +41,96 @@ public class Enemy : NetworkBehaviour {
     {
         if (!isServer)
             return;
+        switch (m_nextBehaviour)
+        {
+            case "HUNT":
+                Hunt();
+                m_lastBehaviour = HuntBeh;
+                break;
+            case "WALK":
+                Walk();
+                m_lastBehaviour = WALKBeh;
+                break;
+            default:
+                m_lastBehaviour = WALKBeh;
+                m_nextBehaviour = WALKBeh;
+                break;
+        }
+    }
 
-        // get first player to find
-        GameObject[] player = GameObject.FindGameObjectsWithTag("Player");
+    private void Walk()
+    {
+        // get all player exept player at spawn
+        GameObject[] player = NearbyPlayer().ToArray();
+        if (player.Length > 0 && player != null)
+        {
+            m_nextBehaviour = HuntBeh;
+        }
+    }
+
+    private void Hunt()
+    {
+        // get all player exept player at spawn
+        GameObject[] player = NearbyPlayer().ToArray();
         if (player.Length > 0 && player != null)
         {
             float[] distance = GetDistanceOfAllPlayer(player);
             GameObject playerToFollow = player[ClosestPlayer(distance)];
 
             m_mesh.SetDestination(playerToFollow.transform.position);
-            //m_mesh.destination = player.transform.position;
-            //m_mesh.Move(player.transform.position);
-            //MoveToPlayer(player);
+
         }
+        else
+        {
+            // get behaviour
+            m_nextBehaviour = WALKBeh;
+        }
+
+    }
+
+    private List<GameObject> NearbyPlayer()
+    {
+        // get first player to find
+        List<GameObject> playerList = GameObject.FindGameObjectsWithTag("Player").ToList();
+        // remove player who is at spawn
+        playerList = RemovePlayerAtSpawn(playerList);
+        return RemoveFromHighDistance(playerList);
+    }
+
+    private List<GameObject> RemoveFromHighDistance(List<GameObject> _player)
+    {
+        List<GameObject> listToReturn = new List<GameObject>();
+
+        foreach (GameObject go in _player)
+        {
+            // calculate Distance
+            Vector3 v = go.transform.position - this.transform.position;
+            float distance = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+            if (distance <= MaxDistance)
+            {
+                listToReturn.Add(go);
+            }
+        }
+
+        return listToReturn;
     }
 
     /// <summary>
     /// Remove Gameobjects from array when player is at spawnpoint
     /// </summary>
     /// <param name="_player"></param>
-    private void RemovePlayerAtSpawn(GameObject _player)
+    private List<GameObject> RemovePlayerAtSpawn(List<GameObject> _player)
     {
+        List<GameObject> list = new List<GameObject>();
+        foreach (GameObject go in _player)
+        {
+            if (go.transform.position.y <= m_distanceToSpawn)
+            {
+                list.Add(go);
+            }
+        }
 
+        return list;
     }
     /// <summary>
     /// Get Distance of gameobject array
