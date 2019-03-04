@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 33306245212513916}
   - component: {fileID: 23866595324205524}
   - component: {fileID: 65257908207772646}
-  - component: {fileID: 114793119081281338}
   m_Layer: 0
   m_Name: SpawnPlattform
   m_TagString: Untagged
@@ -171,35 +170,3 @@ MonoBehaviour:
   m_Script: {fileID: -1050975500, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114793119081281338
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1222490707268386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 115
-    i1: 242
-    i2: 50
-    i3: 141
-    i4: 94
-    i5: 71
-    i6: 6
-    i7: 228
-    i8: 40
-    i9: 69
-    i10: 225
-    i11: 206
-    i12: 37
-    i13: 182
-    i14: 154
-    i15: 13
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
