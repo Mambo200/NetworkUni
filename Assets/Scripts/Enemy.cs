@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Networking;
+using Extensions;
 
 public class Enemy : NetworkBehaviour {
 
@@ -14,9 +15,20 @@ public class Enemy : NetworkBehaviour {
 
     public static string HuntBeh { get { return "HUNT"; } }
     public static string WALKBeh { get { return "WALK"; } }
+    public static float WalkPositionDistance { get { return 1f; } }
 
     private static string m_lastBehaviour;
     private static string m_nextBehaviour;
+    private static int m_walkIndex = 0;
+    private static int WalkIndex
+    {
+        get { return m_walkIndex; }
+        set
+        {
+            m_walkIndex = (value >= EnemyWalkPositions.Get.Length) ? m_walkIndex = 0 : m_walkIndex = value;
+        }
+        
+    }
 
     public override void OnStartServer()
     {
@@ -24,9 +36,8 @@ public class Enemy : NetworkBehaviour {
             return;
 
         m_mesh = GetComponent<NavMeshAgent>();
-        m_mesh.Warp(new Vector3(1, 0, 1));
+        m_mesh.Warp(new Vector3(1, 0, 1));   
     }
-
 
     private void Start()
     {
@@ -66,6 +77,20 @@ public class Enemy : NetworkBehaviour {
         {
             m_nextBehaviour = HuntBeh;
         }
+        else
+        {
+            // walk to next point
+            m_mesh.SetDestination(EnemyWalkPositions.Get[WalkIndex].position);
+
+            // if enemy is near position set new position
+            if (IsInRange(this.transform.position.x, EnemyWalkPositions.Get[WalkIndex].position.x) &&
+                IsInRange(this.transform.position.z, EnemyWalkPositions.Get[WalkIndex].position.z))
+            {
+                WalkIndex++;
+            }
+        }
+
+        
     }
 
     private void Hunt()
@@ -113,6 +138,25 @@ public class Enemy : NetworkBehaviour {
         }
 
         return listToReturn;
+    }
+
+    /// <summary>
+    /// check if two values are almost equal (for value see <b> <see cref="WalkPositionDistance"/></b>)
+    /// </summary>
+    /// <param name="_pos1">first position</param>
+    /// <param name="_pos2">second position</param>
+    /// <returns>
+    ///   <c>true</c> if positions are almose equal; otherwise, <c>false</c>.
+    /// </returns>
+    private bool IsInRange(float _pos1, float _pos2)
+    {
+        if (_pos1 + WalkPositionDistance >= _pos2 &&
+            _pos1 - WalkPositionDistance <= _pos2)
+        {
+            return true;
+        }
+        else
+            return false;
     }
 
     /// <summary>

@@ -18,12 +18,6 @@ public class Box : NetworkBehaviour
 
     [SyncVar]
     public float m_DeadCounter = 0;
-    private Vector3 m_lastPosition;
-    private Vector3 m_nextPosition;
-    private float m_currentLerpTime;
-    private float m_totalLerpTime;
-    private List<Vector3> m_nextPositions
-        = new List<Vector3>();
 
     [SerializeField]
     private Camera m_playerCamera;

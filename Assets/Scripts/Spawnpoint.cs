@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Extensions;
 
 public class Spawnpoint : NetworkBehaviour {
 
-    private static Transform[] get;
+    public static Transform[] Get { get; private set; }
 
     public override void OnStartServer()
     {
@@ -32,18 +33,17 @@ public class Spawnpoint : NetworkBehaviour {
                 getList.Add(t);
             }
         }
-        get = getList.ToArray();
-        Debug.Log(get.Length);
+        Get = getList.ToArray();
+        Debug.Log(Get.Length);
     }
 
     public static Transform[] GetAll()
     {
-        return get;
+        return Get;
     }
 
     public static Transform GetOne()
     {
-        int randomSpawnpoint = Random.Range(0, (get.Length - 1));
-        return get[randomSpawnpoint];
+        return Get.GetOne();
     }
 }
