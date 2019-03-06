@@ -8,18 +8,36 @@ using Extensions;
 
 public class Enemy : NetworkBehaviour {
 
+    /// <summary>Speed of Enemy</summary>
     public float m_speed;
+    /// <summary>NavMeshAgent of Enemy</summary>
     private NavMeshAgent m_mesh;
+    /// <summary>Rigidbody of Enemy</summary>
+    private Rigidbody m_rigidBody;
+    /// <summary>Enemy does not hunt for players who have a higher y-position</summary>
     private float m_distanceToSpawn;
-    private static float MaxDistance { get { return 500f; } }
+    /// <summary>Distance enemy can spot player</summary>
+    private static float MaxDistance { get { return 250f; } }
 
+    /// <summary>Hunt Behaviour</summary>
     public static string HuntBeh { get { return "HUNT"; } }
+    /// <summary>Walk Behaviour</summary>
     public static string WALKBeh { get { return "WALK"; } }
+    /// <summary>when hunted player is out of range, walk to last known position</summary>
+    public static string WALKLASTPOSBeh { get { return "LASTPOS"; } }
+    /// <summary>Enemy can be this amount away from accurate WalkPosition</summary>
     public static float WalkPositionDistance { get { return 1f; } }
 
-    private static string m_lastBehaviour;
-    private static string m_nextBehaviour;
+    /// <summary>Last position of hunted player</summary>
+    private Vector3 m_lastPositionPlayer;
+
+    /// <summary>Last Behaviour</summary>
+    private string m_lastBehaviour;
+    /// <summary>Next Behaviour</summary>
+    private string m_nextBehaviour;
+    /// <summary>DO NOT USE! SEE <see cref="WalkIndex"/></summary>
     private static int m_walkIndex = 0;
+    /// <summary>Index of Walk position</summary>
     private static int WalkIndex
     {
         get { return m_walkIndex; }
@@ -32,6 +50,8 @@ public class Enemy : NetworkBehaviour {
 
     public override void OnStartServer()
     {
+        m_rigidBody = GetComponent<Rigidbody>();
+
         if (!isServer)
             return;
 
@@ -41,6 +61,9 @@ public class Enemy : NetworkBehaviour {
 
     private void Start()
     {
+        if (m_rigidBody == null)
+            m_rigidBody = GetComponent<Rigidbody>();
+
         if (!isServer)
             return;
 
@@ -51,7 +74,9 @@ public class Enemy : NetworkBehaviour {
     void Update()
     {
         if (!isServer)
+        {
             return;
+        }
         switch (m_nextBehaviour)
         {
             case "HUNT":
@@ -62,11 +87,16 @@ public class Enemy : NetworkBehaviour {
                 Walk();
                 m_lastBehaviour = WALKBeh;
                 break;
+            case "LASTPOS":
+                LastPos();
+                m_lastBehaviour = WALKLASTPOSBeh;
+                break;
             default:
                 m_lastBehaviour = WALKBeh;
                 m_nextBehaviour = WALKBeh;
                 break;
         }
+        Debug.Log(m_nextBehaviour);
     }
 
     private void Walk()
@@ -74,7 +104,7 @@ public class Enemy : NetworkBehaviour {
         // get all player exept player at spawn
         GameObject[] player = NearbyPlayer().ToArray();
         if (player.Length > 0 && player != null)
-        {
+        { 
             m_nextBehaviour = HuntBeh;
         }
         else
@@ -102,18 +132,42 @@ public class Enemy : NetworkBehaviour {
             float[] distance = GetDistanceOfAllPlayer(player);
             GameObject playerToFollow = player[ClosestPlayer(distance)];
 
-            m_mesh.SetDestination(playerToFollow.transform.position);
+            m_lastPositionPlayer = playerToFollow.transform.position;
+            m_mesh.SetDestination(m_lastPositionPlayer);
 
         }
         else
         {
-            // get behaviour
-            m_nextBehaviour = WALKBeh;
+            // get next behaviour
+            m_nextBehaviour = WALKLASTPOSBeh;
         }
 
     }
 
-    private List<GameObject> NearbyPlayer()
+    private void LastPos()
+    {
+        // get all player exept player at spawn
+        GameObject[] player = NearbyPlayer().ToArray();
+        if (player.Length > 0 && player != null)
+        {
+            m_nextBehaviour = HuntBeh;
+            return;
+        }
+
+        // if enemy is near last known player position change behaviour
+        if (IsInRange(this.transform.position.x, m_lastPositionPlayer.x) &&
+            IsInRange(this.transform.position.z, m_lastPositionPlayer.z))
+        {
+            m_nextBehaviour = WALKBeh;
+        }
+        else
+        {
+            m_mesh.SetDestination(m_lastPositionPlayer);
+        }
+
+}
+
+private List<GameObject> NearbyPlayer()
     {
         // get first player to find
         List<GameObject> playerList = GameObject.FindGameObjectsWithTag("Player").ToList();

@@ -57,7 +57,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1371167226823380}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4356242046727560}
@@ -142,10 +142,10 @@ Light:
   m_GameObject: {fileID: 1371167226823380}
   m_Enabled: 1
   serializedVersion: 8
-  m_Type: 0
+  m_Type: 2
   m_Color: {r: 1, g: 0, b: 0, a: 1}
-  m_Intensity: 2
-  m_Range: 6
+  m_Intensity: 4
+  m_Range: 10
   m_SpotAngle: 140
   m_CookieSize: 10
   m_Shadows:
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 1
-  m_SendInterval: 0.1
+  m_SendInterval: 0.033333335
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
   m_SyncSpin: 0
@@ -258,7 +258,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 6
+  m_Speed: 4
   m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 120
