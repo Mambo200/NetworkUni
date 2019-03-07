@@ -14,6 +14,7 @@ using UnityEngine.Networking;
 
 public class Box : NetworkBehaviour
 {
+    public Material m_thisPlayerMaterial;
     public float m_MovementSpeed;
 
     [SyncVar]
@@ -21,8 +22,8 @@ public class Box : NetworkBehaviour
 
     [SerializeField]
     private Camera m_playerCamera;
-
     private Rigidbody m_rigidbody;
+    private Renderer m_renderer;
 
     public override void OnStartLocalPlayer()
     {
@@ -32,14 +33,33 @@ public class Box : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        m_rigidbody = GetComponent<Rigidbody>();
-        m_rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        Initialize();
     }
     public override void OnStartClient()
     {
         base.OnStartClient();
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        // get rigidbody
         m_rigidbody = GetComponent<Rigidbody>();
+        // freeze rotation of rigidbody
         m_rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+
+        // get renderer
+        m_renderer = GetComponent<Renderer>();
+
+    }
+
+    private void Start()
+    {
+        if (isLocalPlayer)
+        {
+            this.gameObject.name += "(this)";
+            m_renderer.material = m_thisPlayerMaterial;
+        }
     }
 
     // Update is called once per frame
