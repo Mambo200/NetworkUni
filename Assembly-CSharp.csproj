@@ -63,9 +63,13 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Box.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
+    <Compile Include="Assets\Scripts\EnemyBehaviour.cs" />
     <Compile Include="Assets\Scripts\EnemyWalkPositions.cs" />
     <Compile Include="Assets\Scripts\Extensions.cs" />
+    <Compile Include="Assets\Scripts\Item.cs" />
+    <Compile Include="Assets\Scripts\ItemManager.cs" />
     <Compile Include="Assets\Scripts\MoveHorse.cs" />
+    <Compile Include="Assets\Scripts\RotateScript.cs" />
     <Compile Include="Assets\Scripts\Spawnpoint.cs" />
     <Compile Include="Assets\ZZZTestOlny\Scripts\TEST_MoveObject.cs" />
     <Reference Include="UnityEditor.StandardEvents">

@@ -96,6 +96,10 @@ public class Box : NetworkBehaviour
     [Server]
     private void ResetPosition()
     {
+        // do nothing if enemy is confused
+        if (Enemy.DebuffType == Assets.Scripts.ItemType.CONFUSED)
+            return;
+
         m_DeadCounter++;
         RpcResetPosition(Spawnpoint.GetOne().gameObject.transform.position);
     }
