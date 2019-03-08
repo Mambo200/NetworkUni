@@ -34,7 +34,6 @@ public class Spawnpoint : NetworkBehaviour {
             }
         }
         Get = getList.ToArray();
-        Debug.Log(Get.Length);
     }
 
     public static Transform[] GetAll()

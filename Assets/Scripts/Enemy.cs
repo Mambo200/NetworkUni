@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Networking;
+using Assets.Scripts;
 using Extensions;
 
 public class Enemy : NetworkBehaviour {
@@ -16,15 +17,23 @@ public class Enemy : NetworkBehaviour {
     private Rigidbody m_rigidBody;
     /// <summary>Enemy does not hunt for players who have a higher y-position</summary>
     private float m_distanceToSpawn;
+    
+    public static float DefaultDebuffTime { get { return 10f; } }
+    /// <summary>Player debuff</summary>
+    private static ItemType debuffType = ItemType.NONE;
+    /// <summary>get Player debuff</summary>
+    public static ItemType DebuffType { get { return debuffType; } }
+    /// <summary>Time the debuf lasts</summary>
+    private static float debuffTime;
     /// <summary>Distance enemy can spot player</summary>
-    private static float MaxDistance { get { return 250f; } }
+    private float MaxDistance { get { return debuffType == ItemType.BLIND ? 100f : 250f; } }
 
     /// <summary>Hunt Behaviour</summary>
-    public static string HuntBeh { get { return "HUNT"; } }
+    public static EnemyBehaviour HuntBeh { get { return EnemyBehaviour.HUNT; } }
     /// <summary>Walk Behaviour</summary>
-    public static string WALKBeh { get { return "WALK"; } }
+    public static EnemyBehaviour WALKBeh { get { return EnemyBehaviour.WALK; } }
     /// <summary>when hunted player is out of range, walk to last known position</summary>
-    public static string WALKLASTPOSBeh { get { return "LASTPOS"; } }
+    public static EnemyBehaviour WALKLASTPOSBeh { get { return EnemyBehaviour.CHECKLASTPOSITION; } }
     /// <summary>Enemy can be this amount away from accurate WalkPosition</summary>
     public static float WalkPositionDistance { get { return 1f; } }
 
@@ -32,13 +41,13 @@ public class Enemy : NetworkBehaviour {
     private Vector3 m_lastPositionPlayer;
 
     /// <summary>Last Behaviour</summary>
-    private string m_lastBehaviour;
+    private EnemyBehaviour m_lastBehaviour;
     /// <summary>Next Behaviour</summary>
-    private string m_nextBehaviour;
+    private EnemyBehaviour m_nextBehaviour;
     /// <summary>DO NOT USE! SEE <see cref="WalkIndex"/></summary>
-    private static int m_walkIndex = 0;
+    private int m_walkIndex = 0;
     /// <summary>Index of Walk position</summary>
-    private static int WalkIndex
+    private int WalkIndex
     {
         get { return m_walkIndex; }
         set
@@ -73,21 +82,18 @@ public class Enemy : NetworkBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (!isServer)
-        {
-            return;
-        }
+        if (!isServer) return;
         switch (m_nextBehaviour)
         {
-            case "HUNT":
-                Hunt();
-                m_lastBehaviour = HuntBeh;
-                break;
-            case "WALK":
+            case EnemyBehaviour.WALK:
                 Walk();
                 m_lastBehaviour = WALKBeh;
                 break;
-            case "LASTPOS":
+            case EnemyBehaviour.HUNT:
+                Hunt();
+                m_lastBehaviour = HuntBeh;
+                break;
+            case EnemyBehaviour.CHECKLASTPOSITION:
                 LastPos();
                 m_lastBehaviour = WALKLASTPOSBeh;
                 break;
@@ -96,14 +102,39 @@ public class Enemy : NetworkBehaviour {
                 m_nextBehaviour = WALKBeh;
                 break;
         }
-        Debug.Log(m_nextBehaviour);
+
+        switch (debuffType)
+        {
+            case ItemType.NONE:
+                break;
+            case ItemType.BLIND:
+                {
+                    debuffTime -= Time.deltaTime;
+
+                    if (debuffTime <= 0)
+                        debuffType = ItemType.NONE;
+                }
+                break;
+            case ItemType.CONFUSED:
+                {
+                    debuffTime -= Time.deltaTime;
+
+                    if (debuffTime <= 0)
+                        debuffType = ItemType.NONE;
+                    else
+                        m_nextBehaviour = EnemyBehaviour.WALK;
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     private void Walk()
     {
         // get all player exept player at spawn
         GameObject[] player = NearbyPlayer().ToArray();
-        if (player.Length > 0 && player != null)
+        if (player.Length > 0 && player != null && debuffType != ItemType.CONFUSED)
         { 
             m_nextBehaviour = HuntBeh;
         }
@@ -165,9 +196,9 @@ public class Enemy : NetworkBehaviour {
             m_mesh.SetDestination(m_lastPositionPlayer);
         }
 
-}
+    }
 
-private List<GameObject> NearbyPlayer()
+    private List<GameObject> NearbyPlayer()
     {
         // get first player to find
         List<GameObject> playerList = GameObject.FindGameObjectsWithTag("Player").ToList();
@@ -291,6 +322,16 @@ private List<GameObject> NearbyPlayer()
 
         return arrayPos;
     }
+
+    /// <summary>
+    /// Set debuf status
+    /// </summary>
+    public static void SetDebuff(ItemType _type, float _debuffTime)
+    {
+        debuffType = _type;
+        debuffTime = _debuffTime;
+    }
+
 
     //private void MoveToPlayer(GameObject _player)
     //{
